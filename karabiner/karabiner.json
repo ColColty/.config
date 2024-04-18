@@ -718,7 +718,9 @@
                   {
                     "key_code": "f",
                     "modifiers": [
-                      "right_control"
+                      "right_control",
+                      "right_command",
+                      "right_shift"
                     ]
                   }
                 ],
@@ -744,7 +746,9 @@
                   {
                     "key_code": "j",
                     "modifiers": [
-                      "right_control"
+                      "right_control",
+                      "right_command",
+                      "right_shift"
                     ]
                   }
                 ],
