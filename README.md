@@ -15,6 +15,7 @@ This is the configuration of my system. It is a work in progress and it is const
 - [ ] Install fd
 - [ ] Install Docker
 - [ ] Clone this repo and replace elements in the .config
+- [ ] Put the keyboard remap in /Library/Keyboard Layouts
 
 ### System 
 
