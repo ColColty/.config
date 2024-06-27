@@ -20,6 +20,7 @@ This is the configuration of my system. It is a work in progress and it is const
 
 - [ ] Install Raycast
 - [ ] Install Karabiner
+- [ ] Install Ukelele for the keyboard remap
 - [ ] Install Homerow
 
 - [ ] Install DataGrip
@@ -36,4 +37,5 @@ This is the configuration of my system. It is a work in progress and it is const
 
 - [ ] Install Hidden Bar
 - [ ] Install KeyCastr
+- [ ] Install Hand Mirror
 
