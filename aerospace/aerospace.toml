@@ -21,8 +21,9 @@ after-startup-command = [
 
 # Notify Sketchybar about workspace change
 exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+    'sketchybar --trigger aerospace_workspace_change AEROSPACE_FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE AEROSPACE_PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE'
 ]
+
 [gaps]
 inner.horizontal = 3
 inner.vertical =   3
@@ -50,9 +51,8 @@ alt-v = 'split vertical'
 
 alt-f = 'fullscreen'
 
-alt-s = 'layout v_accordion' # 'layout stacking' in i3
 alt-w = 'layout h_accordion' # 'layout tabbed' in i3
-alt-g = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
+alt-e = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
 
 alt-shift-space = 'layout floating tiling' # 'floating toggle' in i3
 
@@ -74,7 +74,6 @@ alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 alt-0 = 'workspace 10'
-alt-t = 'workspace t'
 
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
@@ -86,7 +85,6 @@ alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
 alt-shift-0 = 'move-node-to-workspace 10'
-alt-shift-t = 'move-node-to-workspace t'
 
 alt-shift-c = 'reload-config'
 
@@ -96,7 +94,7 @@ alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-alt-p = 'mode service'
+alt-s = 'mode service'
 
 alt-r = 'mode resize'
 
@@ -124,10 +122,28 @@ alt-shift-l = ['join-with right', 'mode main']
 
 [[on-window-detected]]
 if.app-id = 'org.alacritty'
-run = "move-node-to-workspace t"
+run = "move-node-to-workspace 1"
 
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.Browser'
+if.window-title-regex-substring = 'Little Arc'
+check-further-callbacks = false
+run = "layout floating"
+
+[[on-window-detected]]
+if.app-id = 'company.thebrowser.Browser'
+run = "move-node-to-workspace 2"
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = "move-node-to-workspace 2"
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = "move-node-to-workspace 2"
+
+[[on-window-detected]]
+if.app-id = 'org.mozilla.firefox'
 run = "move-node-to-workspace 2"
 
 [[on-window-detected]]
@@ -142,3 +158,14 @@ run = "move-node-to-workspace 4"
 if.app-id = 'im.beeper'
 run = "move-node-to-workspace 4"
 
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+run = "move-node-to-workspace 5"
+
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = "move-node-to-workspace 8"
+
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = "layout floating"
