@@ -45,9 +45,12 @@ VOLUME_33=􀊥
 VOLUME_10=􀊡
 VOLUME_0=􀊣
 
-# WiFi
+# WiFi / Network
 WIFI_CONNECTED=􀙇
 WIFI_DISCONNECTED=􀙈
+
+# AirPods / Audio
+AIRPODS=􀪷
 
 # svim
 MODE_NORMAL=􀂯
