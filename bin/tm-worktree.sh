@@ -27,46 +27,57 @@ create_worktree() {
     local REPO_NAME
     REPO_NAME=$(basename "$REPO_ROOT")
 
-    # 2. Define Paths & Names
-    local WORKTREE_BASE="$HOME/.worktrees/$REPO_NAME"
-    local WORKTREE_PATH="$WORKTREE_BASE/$BRANCH_NAME"
+    # 2. Check if branch is ALREADY checked out anywhere
+    # We use git worktree list --porcelain to reliably find the path
+    local EXISTING_WT_PATH
+    EXISTING_WT_PATH=$(git worktree list --porcelain | grep -B 2 "^branch refs/heads/$BRANCH_NAME$" | grep "^worktree " | cut -d ' ' -f 2-)
+
+    local WORKTREE_PATH
     
-    # Sanitize Session Name (replace . with _)
-    local SAFE_REPO_NAME="${REPO_NAME//./_}"
-    local SESSION_NAME="${SAFE_REPO_NAME}/${BRANCH_NAME}"
-
-    mkdir -p "$WORKTREE_BASE"
-
-    # 3. Check / Create Worktree
-    if [ -d "$WORKTREE_PATH" ]; then
-        # Case A: Folder exists. Assume it's valid and just switch.
-        notify "Worktree found. Switching to session..."
+    if [ -n "$EXISTING_WT_PATH" ]; then
+        # CASE A: Branch is already active in another folder
+        WORKTREE_PATH="$EXISTING_WT_PATH"
+        notify "Branch active at $(basename "$WORKTREE_PATH"). Switching..."
     else
-        # Case B: Folder missing. Create it.
-        
-        # Check if branch exists in git (but not in this worktree folder)
-        if git rev-parse --verify "$BRANCH_NAME" >/dev/null 2>&1; then
-            notify "Branch exists. Checking out into new worktree..."
-            if ! git worktree add "$WORKTREE_PATH" "$BRANCH_NAME" 2>&1; then
-                 notify "Error: Failed to checkout existing branch."
-                 exit 1
-            fi
+        # CASE B: Branch is not checked out. Create new standard path.
+        local WORKTREE_BASE="$HOME/.worktrees/$REPO_NAME"
+        WORKTREE_PATH="$WORKTREE_BASE/$BRANCH_NAME"
+        mkdir -p "$WORKTREE_BASE"
+
+        # Check if folder exists (but git doesn't think the branch is there)
+        if [ -d "$WORKTREE_PATH" ]; then
+             notify "Resuming existing worktree folder..."
         else
-            notify "Creating new branch and worktree..."
-            if ! git worktree add "$WORKTREE_PATH" -b "$BRANCH_NAME" 2>&1; then
-                 notify "Error creating worktree."
-                 exit 1
+            # Actually create the worktree
+            notify "Creating worktree for $BRANCH_NAME..."
+            
+            # Check if branch exists in git history (but not checked out)
+            if git rev-parse --verify "$BRANCH_NAME" >/dev/null 2>&1; then
+                # Branch exists: Checkout
+                if ! git worktree add "$WORKTREE_PATH" "$BRANCH_NAME" 2>&1; then
+                    notify "Error checking out existing branch."
+                    exit 1
+                fi
+            else
+                # Branch new: Create (-b)
+                if ! git worktree add "$WORKTREE_PATH" -b "$BRANCH_NAME" 2>&1; then
+                    notify "Error creating new branch/worktree."
+                    exit 1
+                fi
             fi
         fi
     fi
 
-    # 4. Create Session (if needed)
-    # If the worktree existed but the session didn't (e.g. after a reboot), this creates it.
+    # 3. Create Session
+    # Sanitize Session Name
+    local SAFE_REPO_NAME="${REPO_NAME//./_}"
+    local SESSION_NAME="${SAFE_REPO_NAME}/${BRANCH_NAME}"
+
     if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
         tmux new-session -d -s "$SESSION_NAME" -c "$WORKTREE_PATH" || true
     fi
 
-    # 5. Switch
+    # 4. Switch
     tmux switch-client -t "$SESSION_NAME"
 }
 
