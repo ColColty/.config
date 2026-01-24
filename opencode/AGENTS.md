@@ -50,3 +50,12 @@ Use these for quick, focused tasks after initial planning:
    - `@iterate` for refinements
 
 This hybrid approach gives you Opus's superior reasoning for planning and implementation, with Sonnet's speed for rapid iteration cycles.
+
+## Memory Commands
+
+Persist information across sessions:
+
+- `/memorize <text>` - Save a memory to MEMORIES.md
+- `/memory <text>` - Alias for memorize
+- `/recall [query]` - Search saved memories
+- `/forget <text>` - Remove a specific memory
