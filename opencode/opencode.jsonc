@@ -1,0 +1,64 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default to plan mode - all conversations start with opus planning
+  "default_agent": "plan",
+
+  // Primary agents with opus and max thinking
+  "agent": {
+    // Plan agent - opus with max thinking for strategic analysis
+    "plan": {
+      "model": "anthropic/claude-opus-4-5",
+      "description": "Strategic planning and analysis with maximum reasoning depth",
+      "temperature": 0.2,
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 32000
+      }
+    },
+
+    // Build agent - opus with max thinking for implementation
+    "build": {
+      "model": "anthropic/claude-opus-4-5",
+      "description": "Full implementation capabilities with deep reasoning",
+      "temperature": 0.3,
+      "thinking": {
+        "type": "enabled",
+        "budgetTokens": 32000
+      }
+    },
+
+    // Quick fix subagent - sonnet without thinking for fast iterations
+    "quickfix": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "description": "Fast fixes and small code changes without deep thinking",
+      "temperature": 0.1,
+      "subagent": true
+    },
+
+    // Quick search subagent - sonnet for fast codebase exploration
+    "search": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "description": "Fast codebase search and navigation",
+      "temperature": 0.0,
+      "subagent": true,
+      "tools": ["read", "glob", "grep", "bash"]
+    },
+
+    // Test runner subagent - sonnet for running and fixing tests
+    "test": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "description": "Run tests and iterate on fixes quickly",
+      "temperature": 0.1,
+      "subagent": true
+    },
+
+    // Iterate subagent - sonnet for small iterations and refinements
+    "iterate": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "description": "Quick iterations and small refinements on existing code",
+      "temperature": 0.2,
+      "subagent": true
+    }
+  }
+}
