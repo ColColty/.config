@@ -30,6 +30,7 @@ echo ""
 CONFIG_DIRS=(
     "aerospace"
     "alacritty"
+    "direnv"
     "karabiner"
     "nvim"
     "sketchybar"
@@ -116,6 +117,21 @@ if [ -f "$DOTFILES_DIR/tmux/.tmux.conf" ]; then
 fi
 
 echo ""
+echo -e "${BLUE}Setting up zsh config...${NC}"
+echo ""
+
+# Zsh expects .zshrc in home directory
+# Create a symlink at ~/.zshrc pointing to the zsh config
+if [ -f "$DOTFILES_DIR/zsh/.zshrc" ]; then
+    create_symlink "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc" ".zshrc"
+fi
+
+# Make the plugin installer executable
+if [ -f "$DOTFILES_DIR/zsh/install-plugins.sh" ]; then
+    chmod +x "$DOTFILES_DIR/zsh/install-plugins.sh"
+fi
+
+echo ""
 echo -e "${BLUE}================================================${NC}"
 echo -e "${GREEN}Installation complete!${NC}"
 echo -e "${BLUE}================================================${NC}"
@@ -150,3 +166,20 @@ echo -e "${GREEN}To update your dotfiles in the future:${NC}"
 echo "  cd $DOTFILES_DIR && git pull"
 echo ""
 echo -e "${GREEN}Changes will automatically apply via symlinks!${NC}"
+echo ""
+
+# Remind about Oh My Zsh setup
+echo -e "${YELLOW}Zsh Setup:${NC}"
+echo "  1. Install Oh My Zsh (if not already installed):"
+echo "     sh -c \"\$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
+echo ""
+echo "  2. Install external zsh plugins:"
+echo "     $DOTFILES_DIR/zsh/install-plugins.sh"
+echo ""
+echo "  3. Install direnv for .envrc support:"
+echo "     macOS: brew install direnv"
+echo "     Ubuntu: sudo apt install direnv"
+echo ""
+echo "  4. .envrc templates available at:"
+echo "     $DOTFILES_DIR/direnv/templates/"
+echo ""

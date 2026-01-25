@@ -1,0 +1,282 @@
+# ============================================================================
+#                         direnv Configuration
+# ============================================================================
+# This file provides utility functions for use in .envrc files
+# Place this at ~/.config/direnv/direnvrc
+# ============================================================================
+
+# ============================================================================
+#                         Layout Functions
+# ============================================================================
+
+# Node.js project layout - sets up node_modules/.bin in PATH
+layout_node() {
+    PATH_add node_modules/.bin
+
+    # If there's a .nvmrc file, notify about the expected node version
+    if [[ -f .nvmrc ]]; then
+        log_status "Expected Node version: $(cat .nvmrc)"
+    fi
+}
+
+# Python virtualenv layout (built-in but included for reference)
+# Usage in .envrc: layout python3
+# This creates a .direnv/python-X.X.X virtualenv
+
+# Custom Python venv with specific path
+layout_python_venv() {
+    local venv_path="${1:-.venv}"
+
+    if [[ ! -d "$venv_path" ]]; then
+        log_status "Creating Python venv at $venv_path"
+        python3 -m venv "$venv_path"
+    fi
+
+    source "$venv_path/bin/activate"
+
+    # Optionally install requirements if they exist
+    if [[ -f requirements.txt ]]; then
+        log_status "Found requirements.txt"
+    fi
+}
+
+# Go project layout - sets GOPATH to local directory
+layout_go() {
+    export GOPATH="$PWD/vendor:$GOPATH"
+    PATH_add "$PWD/vendor/bin"
+    PATH_add bin
+}
+
+# Rust project layout
+layout_rust() {
+    PATH_add target/debug
+    PATH_add target/release
+}
+
+# Poetry layout for Python projects
+layout_poetry() {
+    if [[ ! -f pyproject.toml ]]; then
+        log_error "No pyproject.toml found. Is this a Poetry project?"
+        return 1
+    fi
+
+    # Get the poetry virtualenv path
+    local venv
+    venv=$(poetry env info --path 2>/dev/null)
+
+    if [[ -z "$venv" || ! -d "$venv" ]]; then
+        log_status "Creating Poetry virtualenv..."
+        poetry install
+        venv=$(poetry env info --path)
+    fi
+
+    export VIRTUAL_ENV="$venv"
+    PATH_add "$venv/bin"
+}
+
+# Pipenv layout for Python projects
+layout_pipenv() {
+    if [[ ! -f Pipfile ]]; then
+        log_error "No Pipfile found. Is this a Pipenv project?"
+        return 1
+    fi
+
+    # Create/activate the pipenv environment
+    local venv
+    venv=$(pipenv --venv 2>/dev/null)
+
+    if [[ -z "$venv" || ! -d "$venv" ]]; then
+        log_status "Creating Pipenv virtualenv..."
+        pipenv install --dev
+        venv=$(pipenv --venv)
+    fi
+
+    export VIRTUAL_ENV="$venv"
+    PATH_add "$venv/bin"
+}
+
+# ============================================================================
+#                         Utility Functions
+# ============================================================================
+
+# Load environment variables from a .env file
+dotenv() {
+    local envfile="${1:-.env}"
+
+    if [[ -f "$envfile" ]]; then
+        log_status "Loading $envfile"
+        # Use direnv's built-in dotenv if available, otherwise parse manually
+        if type dotenv_if_exists &>/dev/null; then
+            dotenv_if_exists "$envfile"
+        else
+            while IFS='=' read -r key value; do
+                # Skip comments and empty lines
+                [[ -z "$key" || "$key" =~ ^# ]] && continue
+                # Remove surrounding quotes from value
+                value="${value%\"}"
+                value="${value#\"}"
+                value="${value%\'}"
+                value="${value#\'}"
+                export "$key=$value"
+            done < "$envfile"
+        fi
+    else
+        log_status "No $envfile found"
+    fi
+}
+
+# Load environment variables from a .env file if it exists (no error if missing)
+dotenv_if_exists() {
+    local envfile="${1:-.env}"
+    [[ -f "$envfile" ]] && dotenv "$envfile"
+}
+
+# Require specific environment variables to be set
+require_env() {
+    for var in "$@"; do
+        if [[ -z "${!var}" ]]; then
+            log_error "Required environment variable $var is not set"
+            return 1
+        fi
+    done
+}
+
+# Set a default value for an environment variable if not already set
+env_default() {
+    local var="$1"
+    local default="$2"
+
+    if [[ -z "${!var}" ]]; then
+        export "$var=$default"
+    fi
+}
+
+# Use a specific version of a tool if asdf is available
+use_asdf() {
+    local tool="$1"
+    local version="$2"
+
+    if command -v asdf &>/dev/null; then
+        log_status "Using asdf: $tool $version"
+        asdf local "$tool" "$version" 2>/dev/null || true
+    fi
+}
+
+# Use nvm to switch node version
+use_nvm() {
+    local version="${1:-}"
+
+    if [[ -f .nvmrc && -z "$version" ]]; then
+        version=$(cat .nvmrc)
+    fi
+
+    if [[ -n "$version" ]]; then
+        if command -v nvm &>/dev/null; then
+            nvm use "$version" 2>/dev/null || nvm install "$version"
+        elif [[ -s "$NVM_DIR/nvm.sh" ]]; then
+            source "$NVM_DIR/nvm.sh"
+            nvm use "$version" 2>/dev/null || nvm install "$version"
+        else
+            log_status "nvm not found, using system node"
+        fi
+    fi
+}
+
+# Add local bin directories to PATH
+use_local_bin() {
+    PATH_add bin
+    PATH_add .bin
+    PATH_add scripts
+    PATH_add node_modules/.bin
+}
+
+# ============================================================================
+#                         Secrets Management
+# ============================================================================
+
+# Load secrets from 1Password (requires op CLI)
+use_1password() {
+    local vault="${1:-Private}"
+    local item="$2"
+
+    if ! command -v op &>/dev/null; then
+        log_error "1Password CLI (op) not installed"
+        return 1
+    fi
+
+    if [[ -n "$item" ]]; then
+        log_status "Loading secrets from 1Password: $item"
+        eval "$(op item get "$item" --vault "$vault" --format=env 2>/dev/null)" || true
+    fi
+}
+
+# Load secrets from AWS Secrets Manager
+use_aws_secrets() {
+    local secret_id="$1"
+    local region="${2:-us-east-1}"
+
+    if ! command -v aws &>/dev/null; then
+        log_error "AWS CLI not installed"
+        return 1
+    fi
+
+    log_status "Loading AWS secret: $secret_id"
+    local secret
+    secret=$(aws secretsmanager get-secret-value --secret-id "$secret_id" --region "$region" --query SecretString --output text 2>/dev/null)
+
+    if [[ -n "$secret" ]]; then
+        # Parse JSON and export as environment variables
+        while IFS='=' read -r key value; do
+            export "$key=$value"
+        done < <(echo "$secret" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
+    fi
+}
+
+# ============================================================================
+#                         Docker/Kubernetes
+# ============================================================================
+
+# Set Docker context
+use_docker_context() {
+    local context="$1"
+    export DOCKER_CONTEXT="$context"
+    log_status "Docker context: $context"
+}
+
+# Set Kubernetes context and namespace
+use_kubectl() {
+    local context="$1"
+    local namespace="${2:-default}"
+
+    if [[ -n "$context" ]]; then
+        export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
+        kubectl config use-context "$context" &>/dev/null
+        log_status "Kubernetes context: $context"
+    fi
+
+    if [[ "$namespace" != "default" ]]; then
+        kubectl config set-context --current --namespace="$namespace" &>/dev/null
+        log_status "Kubernetes namespace: $namespace"
+    fi
+}
+
+# ============================================================================
+#                         Terraform/Infrastructure
+# ============================================================================
+
+# Set Terraform workspace
+use_terraform_workspace() {
+    local workspace="$1"
+
+    if [[ -n "$workspace" ]]; then
+        export TF_WORKSPACE="$workspace"
+        log_status "Terraform workspace: $workspace"
+    fi
+}
+
+# Set AWS profile
+use_aws_profile() {
+    local profile="$1"
+    export AWS_PROFILE="$profile"
+    log_status "AWS Profile: $profile"
+}

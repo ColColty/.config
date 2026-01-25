@@ -26,6 +26,7 @@ echo ""
 CONFIG_DIRS=(
     "aerospace"
     "alacritty"
+    "direnv"
     "karabiner"
     "nvim"
     "sketchybar"
@@ -83,6 +84,12 @@ echo -e "${BLUE}Removing tmux config symlink...${NC}"
 echo ""
 
 remove_symlink "$HOME/.tmux.conf" ".tmux.conf" "$DOTFILES_DIR/tmux/.tmux.conf"
+
+echo ""
+echo -e "${BLUE}Removing zsh config symlink...${NC}"
+echo ""
+
+remove_symlink "$HOME/.zshrc" ".zshrc" "$DOTFILES_DIR/zsh/.zshrc"
 
 echo ""
 echo -e "${BLUE}================================================${NC}"
