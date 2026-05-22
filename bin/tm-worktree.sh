@@ -74,11 +74,44 @@ create_worktree() {
     local SESSION_NAME="${SAFE_REPO_NAME}/${BRANCH_NAME}"
 
     if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-        tmux new-session -d -s "$SESSION_NAME" -c "$WORKTREE_PATH" || true
+        tmux new-session -d -s "$SESSION_NAME" -c "$WORKTREE_PATH" -e "WORKTREE=$WORKTREE_PATH" || true
     fi
+    tmux set-option -t "$SESSION_NAME" @worktree "$WORKTREE_PATH" 2>/dev/null || true
 
     # 4. Switch
     tmux switch-client -t "$SESSION_NAME"
+}
+
+kill_worktree_processes() {
+    local WT_PATH=$1
+    # Ensure no trailing slash for consistent matching
+    WT_PATH="${WT_PATH%/}"
+
+    # 1. Stop overmind gracefully if running in this worktree
+    for sock in "$WT_PATH"/.overmind*.sock; do
+        [ -S "$sock" ] || continue
+        "$WT_PATH/bin/overmind" kill -s "$sock" 2>/dev/null && sleep 1
+        rm -f "$sock" 2>/dev/null
+    done
+
+    # 2. Kill any overmind master process started from this worktree
+    pgrep -f "overmind start.*$(printf '%s' "$WT_PATH" | sed 's/[.[\(*^$+?{|]/\\&/g')" 2>/dev/null \
+        | xargs -r kill 2>/dev/null
+
+    # 3. Kill lingering processes whose command line references this worktree
+    #    (LSP servers, chrome-devtools-mcp, biome, typescript-language-server, etc.)
+    #
+    #    Match the path followed by a word boundary (/, space, or end-of-args)
+    #    so that "/foo/bar" doesn't match "/foo/bar-extra" or "/foo/barista".
+    #    Exclude the current shell ($$) and this script.
+    local PIDS
+    PIDS=$(pgrep -f "$WT_PATH(/| |\$)" 2>/dev/null | grep -v "^$$\$" || true)
+    if [ -n "$PIDS" ]; then
+        echo "$PIDS" | xargs kill 2>/dev/null
+        sleep 0.3
+        # SIGKILL stragglers that ignored SIGTERM
+        echo "$PIDS" | xargs kill -9 2>/dev/null || true
+    fi
 }
 
 remove_worktree() {
@@ -101,6 +134,9 @@ remove_worktree() {
         notify "Error: Worktree is dirty. Commit first."
         exit 1
     fi
+
+    # Kill overmind, LSP servers, MCP processes, etc. before removing session
+    kill_worktree_processes "$CURRENT_PATH"
 
     if ! tmux switch-client -l 2>/dev/null; then
         tmux switch-client -n
