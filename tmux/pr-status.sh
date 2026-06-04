@@ -17,12 +17,12 @@ ttl=60
 
 now=$(date +%s)
 mtime=0
-[ -f "$cache" ] && mtime=$(stat -f %m "$cache" 2>/dev/null || echo 0)
+[ -f "$cache" ] && mtime=$(stat -c %Y "$cache" 2>/dev/null || stat -f %m "$cache" 2>/dev/null || echo 0)
 age=$(( now - mtime ))
 
 # Clean up stale lock from a crashed refresh (>120s old).
 if [ -d "$lock" ]; then
-    lock_mtime=$(stat -f %m "$lock" 2>/dev/null || echo 0)
+    lock_mtime=$(stat -c %Y "$lock" 2>/dev/null || stat -f %m "$lock" 2>/dev/null || echo 0)
     if [ $(( now - lock_mtime )) -gt 120 ]; then
         rmdir "$lock" 2>/dev/null
     fi
