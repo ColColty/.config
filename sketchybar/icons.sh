@@ -48,9 +48,11 @@ VOLUME_0=􀊣
 # WiFi / Network
 WIFI_CONNECTED=􀙇
 WIFI_DISCONNECTED=􀙈
+ETHERNET=􀺦
 
 # AirPods / Audio
-AIRPODS=􀪷
+AIRPODS=􀟥   # airpods (side by side); airpodspro is 􀪷
+GEAR=􀍟
 
 # svim
 MODE_NORMAL=􀂯

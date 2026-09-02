@@ -1,47 +1,23 @@
 #!/usr/bin/env bash
+export PATH="/opt/homebrew/bin:$PATH"
+source "$CONFIG_DIR/colors.sh"
 
-echo \$FOCUSED_WORKSPACE: $FOCUSED_WORKSPACE, \$NAME: $NAME \$1: $1 >> ~/aaaa
+# Read state live (not from the event's env) so that if two runs overlap the
+# later write always reflects the current workspace. No animation: overlapping
+# animations were leaving two workspaces highlighted.
+ALL=$(aerospace list-workspaces --all 2>/dev/null)
+NONEMPTY=" $(aerospace list-workspaces --monitor all --empty no 2>/dev/null | tr '\n' ' ') "
+FOCUSED=$(aerospace list-workspaces --focused 2>/dev/null)
+[ -z "$FOCUSED" ] && FOCUSED="$AEROSPACE_FOCUSED_WORKSPACE"
 
-if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
-    sketchybar --set $NAME background.drawing=on
-else
-    sketchybar --set $NAME background.drawing=off
-fi
-
-
-
-# MAIN_COLOR=0xffa17fa7
-# ACCENT_COLOR=0xffe19286
-#
-# echo $NAME > ~/debug_skekychybar
-#
-# if [ "$1" = "change-focused-window" ]; then
-#     echo "change-focused-window"
-#     focused_window_info=$(aerospace list-windows --focused)
-#     focused_window_id=$(echo $focused_window_info | awk -F ' \\| ' '{print $1}')
-#     if [ "$2" = "$focused_window_id" ]; then
-#         sketchybar --set $NAME icon.color=$ACCENT_COLOR
-#     else
-#         sketchybar --set $NAME icon.color=$MAIN_COLOR
-#     fi
-# fi
-#
-# if [ "$1" = "change-focused-workspace" ]; then
-#     echo "change-focused-workspace"
-#     focused_workspace=$(aerospace list-workspaces --focused)
-#     if [ "$2" = "$focused_workspace" ]; then
-#         sketchybar --set $NAME label.color=$ACCENT_COLOR
-#     else
-#         sketchybar --set $NAME label.color=$MAIN_COLOR
-#     fi
-# fi
-#
-# if [ "$1" = "move-window-within-workspace" ]; then
-#     echo "move-window-within-workspace"
-#     focused_workspace=$(aerospace list-workspaces --focused)
-#     if [ "$2" = "$focused_workspace" ]; then
-#         sketchybar --set $NAME label.color=$ACCENT_COLOR
-#     else
-#         sketchybar --set $NAME label.color=$MAIN_COLOR
-#     fi
-# fi
+args=()
+for ws in $ALL; do
+  if [ "$ws" = "$FOCUSED" ]; then
+    args+=(--set "space.$ws" drawing=on background.drawing=on background.color=$WHITE icon.color=$BLACK)
+  elif [[ "$NONEMPTY" == *" $ws "* ]]; then
+    args+=(--set "space.$ws" drawing=on background.drawing=off icon.color=$GREY_5)
+  else
+    args+=(--set "space.$ws" drawing=off)
+  fi
+done
+sketchybar "${args[@]}"

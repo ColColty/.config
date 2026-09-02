@@ -4,52 +4,60 @@
 # But the feature is very helpful.
 # Normalizations eliminate all sorts of weird tree configurations that don't make sense.
 # Give normalizations a chance and enable them back.
-enable-normalization-flatten-containers = false
-enable-normalization-opposite-orientation-for-nested-containers = false
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+config-version = 2
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
 start-at-login = true
+automatically-unhide-macos-hidden-apps = true
+focus-follows-mouse.enabled = true
 
 accordion-padding = 30
 
 # Mouse follows focus when focused monitor changes
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-mode-changed = ['exec-and-forget sketchybar --trigger aerospace_mode_change']
+on-focus-changed = ['exec-and-forget ~/.config/aerospace/on-focus-changed.sh']
 
-after-startup-command = [
-  'exec-and-forget sketchybar',
-  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0'
-]
+after-startup-command = ['exec-and-forget sketchybar --reload']
 
 # Notify Sketchybar about workspace change
-exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change AEROSPACE_FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE AEROSPACE_PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE'
-]
+exec-on-workspace-change = ['~/.config/aerospace/on-workspace-change.sh']
 
 [gaps]
-inner.horizontal = 3
-inner.vertical =   3
-outer.left =       3
-outer.bottom =     3
-outer.top =        [{ monitor."built-in" = 3 }, 35]
-outer.right =      3
+inner.horizontal = 5
+inner.vertical =   5
+outer.left =       5
+outer.bottom =     5
+outer.top =        [{ monitor.'built-in' = 0 }, 38]   # notch band is already excluded on the built-in display; the bar lives there
+outer.right =      5
 
 [mode.main.binding]
 alt-enter = 'exec-and-forget open -n /System/Applications/Alacritty.app'
 
-alt-h = 'focus left'
-alt-j = 'focus down'
-alt-k = 'focus up'
-alt-l = 'focus right'
+alt-h = 'focus --boundaries-action wrap-around-the-workspace left'
+alt-j = 'focus --boundaries-action wrap-around-the-workspace down'
+alt-k = 'focus --boundaries-action wrap-around-the-workspace up'
+alt-l = 'focus --boundaries-action wrap-around-the-workspace right'
 
-alt-shift-h = 'move left'
-alt-shift-j = 'move down'
-alt-shift-k = 'move up'
-alt-shift-l = 'move right'
+alt-shift-h = 'swap --wrap-around left'
+alt-shift-j = 'swap --wrap-around down'
+alt-shift-k = 'swap --wrap-around up'
+alt-shift-l = 'swap --wrap-around right'
 
-# Consider using 'join-with' command as a 'split' replacement if you want to enable normalizations
-alt-ctrl-h = 'split horizontal'
-alt-v = 'split vertical'
+# 'split' removed: dwindle (normalizations on) handles orientation; alt-e toggles it
 
 alt-f = 'fullscreen'
+alt-shift-f = 'exec-and-forget ~/.config/aerospace/toggle-float.sh'   # toggle floating; floats at 60% of the screen, centred
+alt-q = 'close'
+alt-b = 'balance-sizes'
+alt-c = 'exec-and-forget ~/.config/aerospace/center-float.sh'   # centre the focused floating window
+alt-leftSquareBracket = 'workspace --wrap-around prev'
+alt-rightSquareBracket = 'workspace --wrap-around next'
 
 alt-w = 'layout h_accordion' # 'layout tabbed' in i3
 alt-e = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
@@ -94,9 +102,9 @@ alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-alt-s = 'mode service'
+alt-shift-s = 'mode service'
 
-alt-r = 'mode resize'
+alt-shift-r = 'mode resize'
 
 [mode.resize.binding]
 h = 'resize width -50'
@@ -120,52 +128,58 @@ alt-shift-j = ['join-with down', 'mode main']
 alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 
-[[on-window-detected]]
-if.app-id = 'org.alacritty'
-run = "move-node-to-workspace 1"
-
+# Floating exceptions first (first matching rule wins)
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.Browser'
 if.window-title-regex-substring = 'Little Arc'
-check-further-callbacks = false
-run = "layout floating"
+run = 'layout floating'
 
 [[on-window-detected]]
-if.app-id = 'company.thebrowser.Browser'
-run = "move-node-to-workspace 2"
-
-[[on-window-detected]]
-if.app-id = 'com.google.Chrome'
-run = "move-node-to-workspace 2"
-
-[[on-window-detected]]
-if.app-id = 'com.apple.Safari'
-run = "move-node-to-workspace 2"
-
-[[on-window-detected]]
-if.app-id = 'org.mozilla.firefox'
-run = "move-node-to-workspace 2"
-
-[[on-window-detected]]
-if.app-id = 'notion.id'
-run = "move-node-to-workspace 3"
-
-[[on-window-detected]]
-if.app-id = 'com.apple.Music'
-run = "move-node-to-workspace 4"
-
-[[on-window-detected]]
-if.app-id = 'im.beeper'
-run = "move-node-to-workspace 4"
-
-[[on-window-detected]]
-if.app-id = 'com.tinyspeck.slackmacgap'
-run = "move-node-to-workspace 5"
-
-[[on-window-detected]]
-if.app-id = 'us.zoom.xos'
-run = "move-node-to-workspace 8"
+if.window-title-regex-substring = 'Picture-in-Picture'
+run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.MobileSMS'
-run = "layout floating"
+run = 'layout floating'
+
+# Workspace 1: coding
+[[on-window-detected]]
+if.app-id = 'com.t3tools.t3code'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = 'move-node-to-workspace 1'
+
+# Workspace 2: browser
+[[on-window-detected]]
+if.app-id = 'company.thebrowser.Browser'
+run = 'move-node-to-workspace 2'
+
+# Workspace 3: Linear
+[[on-window-detected]]
+if.app-id = 'com.linear'
+run = 'move-node-to-workspace 3'
+
+# Workspace 5: Beeper
+[[on-window-detected]]
+if.app-id = 'im.beeper'
+run = 'move-node-to-workspace 5'
+
+# Workspace 9: Music
+[[on-window-detected]]
+if.app-id = 'com.apple.Music'
+run = 'move-node-to-workspace 9'
+
+# Workspace 4: Morgen, Notion. Anything unlisted opens in the current workspace.
+[[on-window-detected]]
+if.app-id = 'com.todesktop.210203cqcj00tw1'
+run = 'move-node-to-workspace 4'
+
+[[on-window-detected]]
+if.app-id = 'notion.id'
+run = 'move-node-to-workspace 4'

@@ -1,4 +1,6 @@
 #!/bin/bash
-
-#sketchybar --set $NAME icon="$(date '+%a %d. %b')" label="$(date '+%H:%M')"
-sketchybar --set "$NAME" label="$(date '+%d/%m/%y %H:%M')"
+case "$SENDER" in
+  mouse.entered.global) sketchybar --animate tanh 10 --set "$NAME" drawing=on label="$(date '+%a %d %b')" ;;
+  mouse.exited.global)  sketchybar --animate tanh 10 --set "$NAME" drawing=off ;;
+  *)                    sketchybar --set "$NAME" label="$(date '+%a %d %b')" ;;
+esac
