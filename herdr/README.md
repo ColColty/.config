@@ -3,8 +3,8 @@
 Copy `config.toml` into `~/.config/herdr/` (do not symlink the whole directory: herdr keeps its
 socket, logs, plugins and session.json there).
 
-- tmux-style prefix keys, no name prompts, agent panel sorted by priority, prefix+1..9 = agents,
-  prefix+shift+1..9 = tabs, terminal toasts + sound.
+- tmux-style prefix keys, no name prompts, agent panel sorted by priority, prefix+1..9 = tabs,
+  prefix+shift+1..9 = agents, terminal toasts + sound.
 - PR status on the focused agent's sidebar row comes from the `gh-pr` plugin:
   `herdr plugin install wyattjoh/herdr-plugin-gh-pr` (needs `bun` and `gh`). prefix+u opens the PR,
   prefix+i refreshes it. `$pr` token is placed in `[ui.sidebar.agents] rows`.

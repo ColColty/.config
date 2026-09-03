@@ -27,14 +27,14 @@ enabled = true
 [keys]
 prefix = "ctrl+b"
 
-# --- agents: prefix+1..9 jumps to the Nth agent in the panel (priority order) ---
-focus_agent = "prefix+1..9"
+# --- agents: prefix+shift+1..9 jumps to the Nth agent in the panel (priority order) ---
+focus_agent = "prefix+shift+1..9"
 previous_agent = "prefix+shift+left"
 next_agent = "prefix+shift+right"
 
 # --- tabs (tmux windows) ---
 new_tab = "prefix+c"
-switch_tab = "prefix+shift+1..9"       # tabs moved to shift+N since plain N is agents
+switch_tab = "prefix+1..9"             # tmux-style: prefix+N = Nth tab (pane)
 previous_tab = "prefix+p"
 next_tab = "prefix+n"
 rename_tab = "prefix+comma"
