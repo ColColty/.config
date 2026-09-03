@@ -1,0 +1,96 @@
+# herdr configuration — tmux-flavoured keys, agents-first sidebar, PR status.
+onboarding = false
+
+[ui]
+show_agent_labels_on_pane_borders = true
+agent_panel_sort = "priority"          # agent panel is an attention queue (blocked first)
+prompt_new_tab_name = false            # prefix+c creates a tab immediately
+prompt_new_workspace_name = false      # prefix+shift+n creates a workspace immediately
+window_title = "{hostname}: {workspace}"
+status_indicators = "symbols"
+tab_bar_right = [
+  { type = "command", command = "~/.config/herdr/pr-status.sh", interval_seconds = 60, timeout_seconds = 10 },
+  { type = "zoom" },
+  { type = "datetime", format = "%H:%M" },
+]
+tab_bar_right_separator = " · "
+
+# Agent rows: state, space/tab, then agent name + PR number ($pr is stamped by pr-status.sh)
+[ui.sidebar.agents]
+rows = [["state_icon", "workspace", "tab"], ["agent", { token = "$pr", fg = "#7aa2f7" }]]
+
+# Space rows: add the PR next to branch/git status
+[ui.sidebar.spaces]
+rows = [["state_icon", "workspace"], ["branch", "git_status", { token = "$pr", fg = "#7aa2f7" }]]
+
+[ui.toast]
+delivery = "terminal"                  # OSC desktop notifications via Ghostty; survives ssh (not mosh)
+
+[ui.sound]
+enabled = true
+
+[keys]
+prefix = "ctrl+b"
+
+# --- agents: prefix+1..9 jumps to the Nth agent in the panel (priority order) ---
+focus_agent = "prefix+1..9"
+previous_agent = "prefix+shift+left"
+next_agent = "prefix+shift+right"
+
+# --- tabs (tmux windows) ---
+new_tab = "prefix+c"
+switch_tab = "prefix+shift+1..9"       # tabs moved to shift+N since plain N is agents
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
+rename_tab = "prefix+comma"
+close_tab = "prefix+ampersand"
+move_tab_previous = "prefix+{"
+move_tab_next = "prefix+}"
+
+# --- panes ---
+split_horizontal = ['prefix+"', "prefix+minus"]   # tmux "  → top/bottom
+split_vertical = ["prefix+%", "prefix+v", "prefix+|"] # tmux %  → side by side
+close_pane = "prefix+x"
+zoom = "prefix+z"
+focus_pane_left = ["prefix+left", "prefix+h"]
+focus_pane_down = ["prefix+down", "prefix+j"]
+focus_pane_up = ["prefix+up", "prefix+k"]
+focus_pane_right = ["prefix+right", "prefix+l"]
+cycle_pane_next = ["prefix+o", "prefix+tab"]
+cycle_pane_previous = "prefix+shift+tab"
+last_pane = "prefix+;"
+resize_pane_left = "prefix+ctrl+left"
+resize_pane_down = "prefix+ctrl+down"
+resize_pane_up = "prefix+ctrl+up"
+resize_pane_right = "prefix+ctrl+right"
+resize_mode = "prefix+r"
+rename_pane = "prefix+shift+p"
+edit_scrollback = ["prefix+[", "prefix+e"]
+
+# --- workspaces (tmux sessions) & worktrees ---
+workspace_picker = ["prefix+s", "prefix+w"]  # tmux s/w → tree picker
+goto = "prefix+g"
+previous_workspace = "prefix+("
+next_workspace = "prefix+)"
+new_workspace = "prefix+shift+n"
+rename_workspace = "prefix+$"
+close_workspace = "prefix+shift+d"
+new_worktree = "prefix+shift+w"        # your tmux W
+remove_worktree = "prefix+shift+x"     # your tmux X (asks to confirm)
+
+# --- misc ---
+detach = ["prefix+d", "prefix+q"]
+help = "prefix+?"
+settings = "prefix+shift+s"
+reload_config = "prefix+shift+r"
+open_notification_target = "prefix+shift+o"
+toggle_sidebar = "prefix+b"
+
+# prefix+shift+g: open the focused pane's PR (or repo) in the browser
+[[keys.command]]
+key = "prefix+shift+g"
+type = "shell"
+command = "~/.config/herdr/open-pr.sh"
+
+[session]
+resume_agents_on_restore = true
