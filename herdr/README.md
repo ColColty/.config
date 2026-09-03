@@ -1,13 +1,16 @@
 # herdr
 
-Copy `config.toml`, `pr-status.sh` and `open-pr.sh` into `~/.config/herdr/` (do not symlink the
-whole directory: herdr keeps its socket, logs and session.json there).
+Copy `config.toml` into `~/.config/herdr/` (do not symlink the whole directory: herdr keeps its
+socket, logs, plugins and session.json there).
 
-- `config.toml`  tmux-style prefix keys, no name prompts, agents-first sidebar, PR tokens, terminal toasts.
-- `pr-status.sh` runs every 60s from `ui.tab_bar_right`; stamps `$pr` on every agent pane and space via
-  `herdr pane|workspace report-metadata`, caches `gh pr view` in `~/.cache/herdr-pr`.
-- `open-pr.sh`   `prefix+shift+g` opens the focused pane's PR (or repo) in the browser.
+- tmux-style prefix keys, no name prompts, agent panel sorted by priority, prefix+1..9 = agents,
+  prefix+shift+1..9 = tabs, terminal toasts + sound.
+- PR status on the focused agent's sidebar row comes from the `gh-pr` plugin:
+  `herdr plugin install wyattjoh/herdr-plugin-gh-pr` (needs `bun` and `gh`). prefix+u opens the PR,
+  prefix+i refreshes it. `$pr` token is placed in `[ui.sidebar.agents] rows`.
+- More plugins: https://herdr.dev/plugins/ (GitHub repos tagged `herdr-plugin`);
+  `herdr plugin install owner/repo`.
 
 Bell over ssh/mosh: `~/.claude/settings.json` has Notification/Stop hooks that `printf '\a' > /dev/tty`;
-herdr ≥ 0.8.2 forwards BEL to the outer terminal; Ghostty `bell-features = system,attention,title`
-(see `../ghostty/config`). BEL survives mosh; OSC desktop notifications only survive plain ssh.
+herdr ≥ 0.8.2 forwards BEL to the outer terminal; Ghostty `bell-features = system` (see `../ghostty/config`).
+BEL survives mosh; OSC desktop notifications only survive plain ssh.

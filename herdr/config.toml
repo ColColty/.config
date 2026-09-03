@@ -9,19 +9,14 @@ prompt_new_workspace_name = false      # prefix+shift+n creates a workspace imme
 window_title = "{hostname}: {workspace}"
 status_indicators = "symbols"
 tab_bar_right = [
-  { type = "command", command = "~/.config/herdr/pr-status.sh", interval_seconds = 60, timeout_seconds = 10 },
   { type = "zoom" },
   { type = "datetime", format = "%H:%M" },
 ]
 tab_bar_right_separator = " · "
 
-# Agent rows: state, space/tab, then agent name + PR number ($pr is stamped by pr-status.sh)
+# Agent rows: state, space/tab, then agent name + PR status ($pr comes from the gh-pr plugin)
 [ui.sidebar.agents]
 rows = [["state_icon", "workspace", "tab"], ["agent", { token = "$pr", fg = "#7aa2f7" }]]
-
-# Space rows: add the PR next to branch/git status
-[ui.sidebar.spaces]
-rows = [["state_icon", "workspace"], ["branch", "git_status", { token = "$pr", fg = "#7aa2f7" }]]
 
 [ui.toast]
 delivery = "terminal"                  # OSC desktop notifications via Ghostty; survives ssh (not mosh)
@@ -65,7 +60,7 @@ resize_pane_up = "prefix+ctrl+up"
 resize_pane_right = "prefix+ctrl+right"
 resize_mode = "prefix+r"
 rename_pane = "prefix+shift+p"
-edit_scrollback = ["prefix+[", "prefix+e"]
+edit_scrollback = "prefix+e"            # keep herdr's own scrolling; no tmux-style copy mode
 
 # --- workspaces (tmux sessions) & worktrees ---
 workspace_picker = ["prefix+s", "prefix+w"]  # tmux s/w → tree picker
@@ -86,11 +81,18 @@ reload_config = "prefix+shift+r"
 open_notification_target = "prefix+shift+o"
 toggle_sidebar = "prefix+b"
 
-# prefix+shift+g: open the focused pane's PR (or repo) in the browser
+# gh-pr plugin (wyattjoh/herdr-plugin-gh-pr): PR status on the focused agent's row
 [[keys.command]]
-key = "prefix+shift+g"
-type = "shell"
-command = "~/.config/herdr/open-pr.sh"
+key = "prefix+u"
+type = "plugin_action"
+command = "gh-pr.open-pr"
+description = "open PR in browser"
+
+[[keys.command]]
+key = "prefix+i"
+type = "plugin_action"
+command = "gh-pr.refresh"
+description = "refresh PR status"
 
 [session]
 resume_agents_on_restore = true

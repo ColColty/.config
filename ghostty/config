@@ -58,6 +58,6 @@ macos-titlebar-style = hidden
 
 
 shell-integration-features = ssh-env
-# Bell: ring the system beep + bounce the dock icon when a pane sends BEL
+# Bell: play the system beep when a pane sends BEL (no dock bounce, no title mark)
 # (herdr forwards BEL from agents; BEL survives ssh and mosh, unlike OSC notifications)
-bell-features = system,attention,title
+bell-features = system
