@@ -1,7 +1,7 @@
 #!/bin/bash
-# Date shows while the mouse is over the bar, and auto-hides after HIDE_AFTER seconds
+# Date shows while the mouse is over the bar, and auto-hides after HIDE_AFTER (5) seconds
 # even if the mouse stays there. Each new mouse-enter restarts the timer.
-HIDE_AFTER="${CALENDAR_HIDE_AFTER:-30}"
+HIDE_AFTER="${CALENDAR_HIDE_AFTER:-5}"
 TIMER_PID_FILE="${TMPDIR:-/tmp}/sketchybar_calendar_hide.pid"
 
 show() { sketchybar --animate tanh 10 --set "$NAME" drawing=on label="$(date '+%a %d %b')"; }
