@@ -1,0 +1,178 @@
+{
+  "description": "OmniWM: AeroSpace-style shell bindings (Option+H/J/K/L focus incl. out of floating, Option+Return terminal, Option+0 workspace 10, Option+Shift+F float 60%, Option+M centre)",
+  "manipulators": [
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "l",
+        "modifiers": {
+          "mandatory": [
+            "option"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "$HOME/.config/omniwm/focus.sh right"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "k",
+        "modifiers": {
+          "mandatory": [
+            "option"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "$HOME/.config/omniwm/focus.sh up"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "j",
+        "modifiers": {
+          "mandatory": [
+            "option"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "$HOME/.config/omniwm/focus.sh down"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "h",
+        "modifiers": {
+          "mandatory": [
+            "option"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "$HOME/.config/omniwm/focus.sh left"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "return_or_enter",
+        "modifiers": {
+          "mandatory": [
+            "option"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "open -na /Applications/Alacritty.app"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "0",
+        "modifiers": {
+          "mandatory": [
+            "option"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "/opt/homebrew/bin/omniwmctl command switch-workspace 10"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "0",
+        "modifiers": {
+          "mandatory": [
+            "option",
+            "shift"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "/opt/homebrew/bin/omniwmctl command move-to-workspace 10"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "f",
+        "modifiers": {
+          "mandatory": [
+            "option",
+            "shift"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "$HOME/.config/omniwm/toggle-float.sh"
+        }
+      ]
+    },
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "m",
+        "modifiers": {
+          "mandatory": [
+            "option"
+          ],
+          "optional": [
+            "caps_lock"
+          ]
+        }
+      },
+      "to": [
+        {
+          "shell_command": "$HOME/.config/omniwm/center-float.sh"
+        }
+      ]
+    }
+  ]
+}

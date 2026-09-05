@@ -50,8 +50,8 @@ defaults=(
 sketchybar --default "${defaults[@]}"
 
 # Left: workspaces, then binding mode (hidden while in main)
-source "$ITEM_DIR/aerospace.sh"
-source "$ITEM_DIR/mode.sh"
+source "$ITEM_DIR/omniwm.sh"
+# source "$ITEM_DIR/mode.sh"   # AeroSpace binding modes; unused under OmniWM
 
 # Notch gap tracks Alcove's width
 source "$ITEM_DIR/notch.sh"

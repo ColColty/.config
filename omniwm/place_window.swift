@@ -15,6 +15,15 @@ func _AXUIElementGetWindow(_ element: AXUIElement, _ wid: UnsafeMutablePointer<C
 let a = CommandLine.arguments
 guard a.count >= 2, let pct = Double(a[1]) else { exit(2) }
 
+// The Accessibility permission is attributed to the app that launched us (a
+// terminal, Karabiner's user server, ...). Without it every AX write is silently
+// refused, so check first and let macOS show its prompt naming that app.
+let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
+if !AXIsProcessTrustedWithOptions(opts) {
+  FileHandle.standardError.write("place_window: the launching app has no Accessibility permission (System Settings > Privacy & Security > Accessibility)\n".data(using: .utf8)!)
+  exit(3)
+}
+
 let mouse = NSEvent.mouseLocation
 let screen = NSScreen.screens.first { NSMouseInRect(mouse, $0.frame, false) } ?? NSScreen.main!
 let full = NSScreen.screens[0].frame
