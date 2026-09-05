@@ -12,6 +12,7 @@ FOCUSED=$(aerospace list-workspaces --focused 2>/dev/null)
 
 args=()
 for ws in $ALL; do
+  [ "$ws" = "S" ] && continue   # scratchpad parking workspace, never shown
   if [ "$ws" = "$FOCUSED" ]; then
     args+=(--set "space.$ws" drawing=on background.drawing=on background.color=$WHITE icon.color=$BLACK)
   elif [[ "$NONEMPTY" == *" $ws "* ]]; then

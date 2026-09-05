@@ -13,6 +13,7 @@ done
 [ -z "$WORKSPACES" ] && WORKSPACES=$(seq 1 10)
 
 for ws in $WORKSPACES; do
+  [ "$ws" = "S" ] && continue   # scratchpad parking workspace, never shown
   sketchybar --add item "space.$ws" left \
              --set "space.$ws" icon="$ws" \
                                icon.font="$FONT:Bold:12.5" \

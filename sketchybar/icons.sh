@@ -48,7 +48,7 @@ VOLUME_0=􀊣
 # WiFi / Network
 WIFI_CONNECTED=􀙇
 WIFI_DISCONNECTED=􀙈
-ETHERNET=􀺦
+ETHERNET=􀩲   # rectangle.connected.to.line.below
 
 # AirPods / Audio
 AIRPODS=􀟥   # airpods (side by side); airpodspro is 􀪷

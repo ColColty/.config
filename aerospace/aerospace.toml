@@ -14,7 +14,7 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
 start-at-login = true
 automatically-unhide-macos-hidden-apps = true
-focus-follows-mouse.enabled = true
+focus-follows-mouse.enabled = false
 
 accordion-padding = 30
 
@@ -53,9 +53,11 @@ alt-shift-l = 'swap --wrap-around right'
 
 alt-f = 'fullscreen'
 alt-shift-f = 'exec-and-forget ~/.config/aerospace/toggle-float.sh'   # toggle floating; floats at 60% of the screen, centred
-alt-q = 'close'
+alt-q = 'exec-and-forget ~/.config/aerospace/close.sh'   # close; for floating windows refocuses the previous window first (no flash)
 alt-b = 'balance-sizes'
-alt-c = 'exec-and-forget ~/.config/aerospace/center-float.sh'   # centre the focused floating window
+alt-m = 'exec-and-forget ~/.config/aerospace/center-float.sh'   # centre the focused floating window
+alt-minus = 'exec-and-forget ~/.config/aerospace/scratchpad.sh toggle'   # show/hide the scratchpad (Hyprland special workspace)
+alt-shift-minus = 'exec-and-forget ~/.config/aerospace/scratchpad.sh send'   # send focused window to the scratchpad / take it back out
 alt-leftSquareBracket = 'workspace --wrap-around prev'
 alt-rightSquareBracket = 'workspace --wrap-around next'
 
