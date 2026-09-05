@@ -28,6 +28,7 @@ echo ""
 
 # Directories to symlink to ~/.config/
 CONFIG_DIRS=(
+    "omniwm"
     "aerospace"
     "alacritty"
     "karabiner"
