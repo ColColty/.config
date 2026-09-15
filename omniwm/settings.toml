@@ -310,6 +310,21 @@ assignToWorkspace = "5"
 bundleId = "com.automattic.beeper.desktop"
 id = "4A9DE4BF-D25E-43D1-B3BC-8B5505B29599"
 
+[[appRules]]
+assignToWorkspace = "1"
+bundleId = "com.todesktop.230313mzl4w4u92"
+id = "6CE1A734-5CC8-419B-9AF7-6E603D29ABEA"
+
+[[appRules]]
+assignToWorkspace = "3"
+bundleId = "com.tinyspeck.slackmacgap"
+id = "E05F97D5-7031-4CEE-A960-B210DC55C0CD"
+
+[[appRules]]
+assignToWorkspace = "4"
+bundleId = "com.cron.electron"
+id = "B02B8D3D-5557-4C7B-B86D-EFED0E3E9267"
+
 [[hotkeys]]
 binding = "Option+Minus"
 id = "toggleScratchpad.1"

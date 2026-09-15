@@ -116,14 +116,17 @@ RULES = [  # (bundleId, titleRegex, layout, workspace)
     (None, "Picture-in-Picture", "float", None),
     ("com.apple.MobileSMS", None, "float", None),
     ("com.t3tools.t3code", None, None, "1"),
+    ("com.todesktop.230313mzl4w4u92", None, None, "1"),  # Cursor
     ("com.mitchellh.ghostty", None, None, "1"),
     ("com.anthropic.claudefordesktop", None, None, "1"),
     ("company.thebrowser.Browser", None, None, "2"),
     ("com.linear", None, None, "3"),
+    ("com.tinyspeck.slackmacgap", None, None, "3"),  # Slack
     ("com.automattic.beeper.desktop", None, None, "5"),   # Beeper Desktop (was im.beeper under AeroSpace)
     ("com.apple.Music", None, None, "9"),
     ("com.todesktop.210203cqcj00tw1", None, None, "4"),   # Morgen
     ("notion.id", None, None, "4"),
+    ("com.cron.electron", None, None, "4"),  # Notion Calendar
 ]
 def add_rules():
     existing = [(kv(ls, "bundleId") or None, kv(ls, "titleRegex") or None, kv(ls, "assignToWorkspace") or None, kv(ls, "layout") or None)
